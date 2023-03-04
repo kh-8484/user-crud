@@ -7,7 +7,6 @@ export const generateAccessToken = (name) => {
     {
       name,
     },
-    "SCERET"
+    "SECRET"
   );
 };
-

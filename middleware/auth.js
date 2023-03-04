@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-const jwtPrivateKey = "process.env.TOKEN_SECRET";
+const jwtPrivateKey = "TOKEN_SECRET";
 
 export default (req, res, next) => {
   const bearerHeader = req.header("Authorization");
