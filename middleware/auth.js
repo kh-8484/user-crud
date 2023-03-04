@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-const jwtPrivateKey = "TOKEN_SECRET";
+const jwtPrivateKey = "SECRET";
 
 export default (req, res, next) => {
   const bearerHeader = req.header("Authorization");
@@ -10,10 +10,8 @@ export default (req, res, next) => {
   if (!token) return res.status(401).send("Access Denied. No token provided.");
 
   try {
-    // using jwt.verify to verify if it is a valid token
     const decoded = jwt.verify(token, jwtPrivateKey);
 
-    // returns the value of the jwt if the token is verified
     req.user = decoded;
     next();
   } catch (err) {

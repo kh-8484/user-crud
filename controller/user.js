@@ -1,8 +1,26 @@
-import * as userRepo from "../repositories/user.js";
+import STATUS from "../interfaces/statusCodes.js";
+import {
+  createUser,
+  fetchUser,
+  fetchUserByEmailAndPassword,
+  updateUserDetails,
+  deleteUserDetails,
+  fetchUserById,
+} from "../repositories/user.js";
 
-export const logIn = async (name, mobile, password, email, isSql) => {
+export const register = async (name, mobile, password, email, isSql) => {
   try {
-    const result = await logIn(name, mobile, password, email, isSql);
+    const userExist = await fetchUser(email, isSql);
+
+    if (userExist.success) {
+      let err = {
+        status: STATUS.BAD_REQUEST,
+        message: "User already exists",
+      };
+      throw err;
+    }
+
+    const result = await createUser(name, mobile, password, email, isSql);
 
     if (!result.success) {
       throw result.error;
@@ -17,21 +35,33 @@ export const logIn = async (name, mobile, password, email, isSql) => {
   }
 };
 
-export const updateUserDetails = async (
-  name,
-  mobile,
-  password,
-  email,
-  isSql
-) => {
+export const logIn = async (email, password, isSql) => {
   try {
-    const isUserExist = await userRepo.fetchUserDetail(email, isSql);
+    const userExist = await fetchUserByEmailAndPassword(email, password, isSql);
+
+    if (!userExist.success) {
+      throw userExist.message;
+    }
+
+    return {
+      success: true,
+      data: userExist.data,
+    };
+  } catch (error) {
+    return { success: false, error: error };
+  }
+};
+
+export const updateUser = async (_id, name, mobile, password, email, isSql) => {
+  try {
+    const isUserExist = await fetchUserById(_id, isSql);
 
     if (!isUserExist.success) {
       throw result.error;
     }
 
-    const result = await userRepo.updateUserDetails(
+    const result = await updateUserDetails(
+      _id,
       name,
       mobile,
       password,
@@ -52,18 +82,26 @@ export const updateUserDetails = async (
   }
 };
 
-export const deleteUserDetails = async (email, isSql) => {
+export const deleteUser = async (_id, isSql) => {
   try {
-    const isUserExist = await userRepo.fetchUserDetailById(email, isSql);
+    const isUserExist = await fetchUserById(_id, isSql);
 
     if (!isUserExist.success) {
-      throw result.error;
+      let err = {
+        status: STATUS.BAD_REQUEST,
+        message: isUserExist.message,
+      };
+      throw err;
     }
 
-    const result = await userRepo.deleteUserDetails(email, isSql);
+    const result = await deleteUserDetails(_id, isSql);
 
     if (!result.success) {
-      throw result.error;
+      let err = {
+        status: STATUS.BAD_REQUEST,
+        message: result.message,
+      };
+      throw err;
     }
 
     return {

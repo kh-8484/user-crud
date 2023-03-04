@@ -2,10 +2,10 @@
 import jwt from "jsonwebtoken";
 
 // function to generate token
-export const generateAccessToken = (name) => {
+export const generateAccessToken = (_id) => {
   return jwt.sign(
     {
-      name,
+      _id,
     },
     "SECRET"
   );
